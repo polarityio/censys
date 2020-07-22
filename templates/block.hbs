@@ -1,0 +1,86 @@
+{{#if details.results}}
+  <div>
+    <a href="https://censys.io/{{block.userOptions.dataset.display}}?q={{block.entity.value}}" class="p-link">Pivot to Censys Search {{fa-icon "external-link-square" class="external-link-icon"}}</a>
+  </div>
+
+  <span class="p-title">{{fa-icon "info" fixedWidth=true}} Censys Search Results</span>
+
+  {{#each details.results as |result index|}}
+      <h1 class="p-title">
+        Result #{{inc index}}
+      </h1>
+      {{! IPv4 output parsing}}
+      {{#if result.ip}}
+        <div>
+            <span class="p-key">IP: </span>
+            <span class="p-value"><a href="https://censys.io/ipv4/{{result.ip}}" class="p-link">{{result.ip}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
+        </div>
+      {{/if}}
+      {{#if result.location.country}}
+        <div>
+            <span class="p-key">Country: </span>
+            <span class="p-value">{{result.location.country}}</span>
+        </div>
+      {{/if}}
+      {{#if result.location.city}}
+        <div>
+            <span class="p-key">City: </span>
+            <span class="p-value">{{result.location.city}}</span>
+        </div>
+      {{/if}}
+      {{#if result.location.postal_code}}
+        <div>
+            <span class="p-key">Postal Code: </span>
+            <span class="p-value">{{result.location.postal_code}}</span>
+        </div>
+      {{/if}}
+      {{#if result.location.registered_country}}
+        <div>
+            <span class="p-key">Registered Country: </span>
+            <span class="p-value">{{result.location.registered_country}}</span>
+        </div>
+      {{/if}}
+      {{#if result.protocols}}
+        <h1 class="p-title">{{fa-icon "th-large" fixedWidth=true}} Protocols </h1>
+        {{#each result.protocols as |protocol|}}
+            <span class="section-tag">{{protocol}}</span>
+        {{/each}}
+      {{/if}}
+
+      {{! Certificate output parsing}}
+      {{#if result.parsed.subject_dn}}
+        <div>
+            <span class="p-key">Subject DN: </span>
+            <span class="p-value"><a href="https://censys.io/certificates/{{result.parsed.fingerprint_sha256}}" class="p-link">{{result.parsed.subject_dn}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
+        </div>
+      {{/if}}
+      {{#if result.parsed.issuer_dn}}
+        <div>
+            <span class="p-key">Issuer DN: </span>
+            <span class="p-value">{{result.parsed.issuer_dn}}</span>
+        </div>
+      {{/if}}
+      {{#if result.parsed.fingerprint_sha256}}
+        <div>
+            <span class="p-key">SHA-256 Fingerprint: </span>
+            <span class="p-value">{{result.parsed.fingerprint_sha256}}</span>
+        </div>
+      {{/if}}
+
+      {{! Website output parsing}}
+      {{#if result.domain}}
+        <div>
+            <span class="p-key">Domain: </span>
+            <span class="p-value"><a href="https://censys.io/domain/{{result.domain}}" class="p-link">{{result.domain}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
+        </div>
+      {{/if}}
+      {{#if result.alexa_rank}}
+        <div>
+            <span class="p-key">Alexa Rank: </span>
+            <span class="p-value">{{result.alexa_rank}}</span>
+        </div>
+      {{/if}}
+
+  {{/each}}
+
+{{/if}}

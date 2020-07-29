@@ -2,6 +2,10 @@
 
 The Polarity Censys integration allows the Polarity user to quickly perform research against the three Censys maintained datasets collected via daily ZMap scans of the Internet and by synchronizing with public certificate transparency logs.
 
+Check out the integration below!
+
+![Censys](https://user-images.githubusercontent.com/22529325/88841443-ff3caa00-d1ab-11ea-8784-4777f4e77e5e.png)
+
 ## Censys Integration Options 
 
 ### API ID 

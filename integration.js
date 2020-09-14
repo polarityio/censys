@@ -47,8 +47,24 @@ function doLookup(entities, options, cb) {
   let lookupResults = [];
   let tasks = [];
 
+  
+  
   Logger.debug(entities);
   entities.forEach((entity) => {
+    
+    let query
+    
+    if(options.dataset.value === "ipv4"){ 
+      query = "ip:" + entity.value
+      }
+    else if (options.dataset.value === "domain"){
+      query = "domain:" + entity.value
+    } 
+    else {
+      query = entity.value
+    } 
+    
+
     let requestOptions = {
       method: 'POST',
       uri: `${options.url}/search/${options.dataset.value}`,
@@ -57,7 +73,7 @@ function doLookup(entities, options, cb) {
         pass: options.apiSecret
       },
       body: {
-        query: entity.value,
+        query,
         flatten: false
       },
       json: true

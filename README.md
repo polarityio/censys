@@ -15,7 +15,7 @@ API Id provided when you sign up for a Censys API account.
 API Secret Id provided when you sign up for a Censys API account. 
 
 ### Dataset Search Options
-The Censys API only allows searching of one data set at a time. You can specify to search IPs, Domaind or Certificates. 
+The Censys API only allows searching of one data set at a time. You can specify to search IPs, Domain or Certificates. 
 
 > Please note that certificates are looked up via the domain type. 
 

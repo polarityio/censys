@@ -12,6 +12,7 @@ const MAX_PARALLEL_LOOKUPS = 10;
 
 function startup(logger) {
   let defaults = {};
+
   Logger = logger;
 
   const { cert, key, passphrase, ca, proxy, rejectUnauthorized } = config.request;
@@ -47,23 +48,17 @@ function doLookup(entities, options, cb) {
   let lookupResults = [];
   let tasks = [];
 
-  
-  
   Logger.debug(entities);
   entities.forEach((entity) => {
-    
-    let query
-    
-    if(options.dataset.value === "ipv4"){ 
-      query = "ip:" + entity.value
-      }
-    else if (options.dataset.value === "domain"){
-      query = "domain:" + entity.value
-    } 
-    else {
-      query = entity.value
-    } 
-    
+    let query;
+
+    if (options.dataset.value === 'ipv4') {
+      query = 'ip:' + entity.value;
+    } else if (options.dataset.value === 'domain') {
+      query = 'domain:' + entity.value;
+    } else {
+      query = entity.value;
+    }
 
     let requestOptions = {
       method: 'POST',
@@ -81,9 +76,8 @@ function doLookup(entities, options, cb) {
 
     Logger.trace({ requestOptions }, 'Request Options');
 
-    tasks.push(function(done) {
-      requestWithDefaults(requestOptions, function(error, res, body) {
-        Logger.trace({ body, status: res.statusCode });
+    tasks.push(function (done) {
+      requestWithDefaults(requestOptions, function (error, res, body) {
         let processedResult = handleRestError(error, entity, res, body);
 
         if (processedResult.error) {
@@ -104,8 +98,13 @@ function doLookup(entities, options, cb) {
     }
 
     results.forEach((result) => {
-      Logger.trace({result: result}, "results");
-      if (result.body === null || result.body.length === 0 || result.body.results === null || result.body.results.length === 0 ) {
+      Logger.trace({ result: result }, 'results');
+      if (
+        result.body === null ||
+        result.body.length === 0 ||
+        result.body.results === null ||
+        result.body.results.length === 0
+      ) {
         lookupResults.push({
           entity: result.entity,
           data: null
@@ -135,6 +134,8 @@ function handleRestError(error, entity, res, body) {
       detail: 'HTTP Request Error'
     };
   }
+
+  Logger.trace({ body, status: res.statusCode });
 
   if (res.statusCode === 200 && body) {
     // we got data!

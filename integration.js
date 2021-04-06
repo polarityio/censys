@@ -52,9 +52,9 @@ function doLookup(entities, options, cb) {
   entities.forEach((entity) => {
     let query;
 
-    if (options.dataset.value === 'ipv4') {
+    if (options.dataset.value === 'ipv4' && entity.isIPv4) {
       query = 'ip:' + entity.value;
-    } else if (options.dataset.value === 'domain') {
+    } else if (options.dataset.value === 'domain' && entity.isDomain) {
       query = 'domain:' + entity.value;
     } else {
       query = entity.value;

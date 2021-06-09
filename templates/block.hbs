@@ -87,13 +87,15 @@
         </div>
       {{/if}}
   {{/each}}
-
-  <div class="mt-2">
-    {{#if showAll}}
-      <span class="p-action" {{action "toggleShowAll"}}>Hide additional results</span> {{fa-icon "caret-up" fixedWidth=true}}
-    {{else}}
-      <span class="p-action" {{action "toggleShowAll"}}>View {{additionalResults}} additional results</span> {{fa-icon "caret-down" fixedWidth=true}}
-    {{/if}}
-  </div>
+  
+  {{#if (gt numAdditionalResults 0)}}
+    <div class="mt-2">
+      {{#if showAll}}
+        <span class="p-action" {{action "toggleShowAll"}}>Hide additional results</span> {{fa-icon "caret-up" fixedWidth=true}}
+      {{else}}
+        <span class="p-action" {{action "toggleShowAll"}}>View {{numAdditionalResults}} additional results</span> {{fa-icon "caret-down" fixedWidth=true}}
+      {{/if}}
+    </div>
+  {{/if}}
 
 {{/if}}

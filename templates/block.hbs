@@ -3,9 +3,9 @@
     <a href="https://censys.io/{{block.userOptions.dataset.display}}?q={{block.entity.value}}" class="p-link">Pivot to Censys Search {{fa-icon "external-link-square" class="external-link-icon"}}</a>
   </div>
 
-  <span class="p-title">{{fa-icon "info" fixedWidth=true}} Censys Search Results</span>
+  <span class="p-title">{{fa-icon "info" fixedWidth=true}} Censys Search Results ({{pagedResults.length}} of {{details.metadata.count}})</span>
 
-  {{#each details.results as |result index|}}
+  {{#each pagedResults as |result index|}}
       <h1 class="p-title">
         Result #{{inc index}}
       </h1>
@@ -86,7 +86,14 @@
             <span class="p-value">{{result.alexa_rank}}</span>
         </div>
       {{/if}}
-
   {{/each}}
+
+  <div class="mt-2">
+    {{#if showAll}}
+      <span class="p-action" {{action "toggleShowAll"}}>Hide additional results</span> {{fa-icon "caret-up" fixedWidth=true}}
+    {{else}}
+      <span class="p-action" {{action "toggleShowAll"}}>View {{additionalResults}} additional results</span> {{fa-icon "caret-down" fixedWidth=true}}
+    {{/if}}
+  </div>
 
 {{/if}}

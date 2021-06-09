@@ -9,6 +9,7 @@ let Logger;
 let requestWithDefaults;
 
 const MAX_PARALLEL_LOOKUPS = 10;
+const MAX_RESULTS_TO_RETURN = 25;
 
 function startup(logger) {
   let defaults = {};
@@ -99,21 +100,30 @@ function doLookup(entities, options, cb) {
 
     results.forEach((result) => {
       Logger.trace({ result: result }, 'results');
+
+      // result.body should be a POJO
+      // result.body should contain a `results` array with one or more objects in it
       if (
+        typeof result.body !== 'object' ||
+        Array.isArray(result.body) ||
         result.body === null ||
-        result.body.length === 0 ||
-        result.body.results === null ||
-        result.body.results.length === 0
+        !result.body.results ||
+        (Array.isArray(result.body.results) && result.body.results.length === 0)
       ) {
         lookupResults.push({
           entity: result.entity,
           data: null
         });
       } else {
+        let count = result.body.metadata.count ? result.body.metadata.count : result.body.results.length;
+        // censys can return up to 100 results in a single page which is too much for the overlay window so we
+        // only return up to MAX_RESULTS_TO_RETURN
+        result.body.results = result.body.results.slice(0, MAX_RESULTS_TO_RETURN);
+
         lookupResults.push({
           entity: result.entity,
           data: {
-            summary: [`Result Count: ${result.body.results.length}`],
+            summary: [`Result Count: ${count}`],
             details: result.body
           }
         });
@@ -137,32 +147,17 @@ function handleRestError(error, entity, res, body) {
 
   Logger.trace({ body, status: res.statusCode });
 
-  if (res.statusCode === 200 && body) {
-    // we got data!
+  if (res.statusCode === 200 && body.status === 'ok') {
+    // we got data! (could still be a miss however)
     result = {
       entity: entity,
       body: body
     };
-  } else if (res.statusCode === 400) {
-    result = {
-      error: 'Bad Request',
-      detail: body.query_status
-    };
-  } else if (res.statusCode === 404) {
-    result = {
-      error: 'Not Found',
-      detail: body.query_status
-    };
-  } else if (res.statusCode === 429) {
-    result = {
-      error: 'Rate Limit Exceeded',
-      detail: body.query_status
-    };
   } else {
     result = {
-      error: 'Unexpected Error',
-      statusCode: res ? res.statusCode : 'Unknown',
-      detail: 'An unexpected error occurred'
+      statusCode: res.statusCode,
+      body, // add the full body since we have no idea at this point what they are giving us
+      detail: body.error ? body.error : 'An unknown error occurred.'
     };
   }
 

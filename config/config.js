@@ -5,7 +5,7 @@ module.exports = {
    * @type String
    * @required
    */
-  name: 'Censys Search',
+  name: 'Censys',
   /**
    * The acronym that appears in the notification window when information from this integration
    * is displayed.  Note that the acronym is included as part of each "tag" in the summary information
@@ -17,6 +17,7 @@ module.exports = {
    */
   acronym: 'CSYS',
   onDemandOnly: false,
+  defaultColor: 'light-pink',
   /**
    * Description for this integration which is displayed in the Polarity integrations user interface
    *
@@ -24,8 +25,8 @@ module.exports = {
    * @optional
    */
   description:
-    'Censys is a public search engine that enables researchers to quickly ask questions about the hosts and networks that compose the Internet.',
-  entityTypes: ['domain', 'ipv4'],
+    'Censys reduces your Internet attack surface by continually discovering unknown assets and helping remediate Internet facing risks.',
+  entityTypes: ['ipv4'],
   /**
    * Provide custom component logic and template for rendering the integration details block.  If you do not
    * provide a custom template and/or component then the integration will display data as a table of key value
@@ -70,9 +71,9 @@ module.exports = {
       key: "url",
       name: "Base URL for the Censys REST API",
       description:
-        "The base URL for the Censys REST API including the schema (i.e., https://)",
+        "The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://search.censys.io/api`",
       type: "text",
-      default: "https://censys.io/api/v1",
+      default: "https://search.censys.io/api",
       userCanEdit: false,
       adminOnly: false
     },
@@ -91,34 +92,6 @@ module.exports = {
       description: 'Valid Censys API Secret corresponding to the provided ID',
       default: '',
       type: 'password',
-      userCanEdit: true,
-      adminOnly: false
-    },
-    {
-      key: 'dataset',
-      name: 'Dataset to search',
-      description:
-        'Execute searches within the specified Censys dataset',
-      default: {
-        value: 'ipv4',
-        display: 'ipv4'
-      },
-      type: 'select',
-      options: [
-        {
-          value: 'ipv4',
-          display: 'ipv4'
-        },
-        {
-          value: 'websites',
-          display: 'domain'
-        },
-        {
-          value: 'certificates',
-          display: 'certificates'
-        }
-      ],
-      multiple: false,
       userCanEdit: true,
       adminOnly: false
     }

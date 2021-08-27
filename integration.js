@@ -4,12 +4,13 @@ const request = require('request');
 const config = require('./config/config');
 const async = require('async');
 const fs = require('fs');
+const get = require('lodash.get');
 
 let Logger;
 let requestWithDefaults;
 
 const MAX_PARALLEL_LOOKUPS = 10;
-const MAX_RESULTS_TO_RETURN = 25;
+const MAX_SERVICE_TAGS = 3;
 
 function startup(logger) {
   let defaults = {};
@@ -51,26 +52,12 @@ function doLookup(entities, options, cb) {
 
   Logger.debug(entities);
   entities.forEach((entity) => {
-    let query;
-
-    if (options.dataset.value === 'ipv4' && entity.isIPv4) {
-      query = 'ip:' + entity.value;
-    } else if (options.dataset.value === 'domain' && entity.isDomain) {
-      query = 'domain:' + entity.value;
-    } else {
-      query = entity.value;
-    }
-
     let requestOptions = {
-      method: 'POST',
-      uri: `${options.url}/search/${options.dataset.value}`,
+      method: 'GET',
+      uri: `${options.url}/v2/hosts/${entity.value}`,
       auth: {
         user: options.apiId,
         pass: options.apiSecret
-      },
-      body: {
-        query,
-        flatten: false
       },
       json: true
     };
@@ -99,31 +86,16 @@ function doLookup(entities, options, cb) {
     }
 
     results.forEach((result) => {
-      Logger.trace({ result: result }, 'results');
-
-      // result.body should be a POJO
-      // result.body should contain a `results` array with one or more objects in it
-      if (
-        typeof result.body !== 'object' ||
-        Array.isArray(result.body) ||
-        result.body === null ||
-        !result.body.results ||
-        (Array.isArray(result.body.results) && result.body.results.length === 0)
-      ) {
+      if (result.body === null || result.body.length === 0) {
         lookupResults.push({
           entity: result.entity,
           data: null
         });
       } else {
-        let count = result.body.metadata.count ? result.body.metadata.count : result.body.results.length;
-        // censys can return up to 100 results in a single page which is too much for the overlay window so we
-        // only return up to MAX_RESULTS_TO_RETURN
-        result.body.results = result.body.results.slice(0, MAX_RESULTS_TO_RETURN);
-
         lookupResults.push({
           entity: result.entity,
           data: {
-            summary: [`Result Count: ${count}`],
+            summary: getTags(result.body),
             details: result.body
           }
         });
@@ -136,8 +108,6 @@ function doLookup(entities, options, cb) {
 }
 
 function handleRestError(error, entity, res, body) {
-  let result;
-
   if (error) {
     return {
       error: error,
@@ -147,21 +117,50 @@ function handleRestError(error, entity, res, body) {
 
   Logger.trace({ body, status: res.statusCode });
 
-  if (res.statusCode === 200 && body.status === 'ok') {
+  if (res.statusCode === 200 && body.status === 'OK') {
     // we got data! (could still be a miss however)
-    result = {
-      entity: entity,
-      body: body
-    };
+    if (hasResult(body)) {
+      return {
+        entity,
+        body
+      };
+    } else {
+      return {
+        entity,
+        body: null
+      };
+    }
   } else {
-    result = {
+    return {
       statusCode: res.statusCode,
       body, // add the full body since we have no idea at this point what they are giving us
+      error: true,
       detail: body.error ? body.error : 'An unknown error occurred.'
     };
   }
+}
 
-  return result;
+function hasResult(body) {
+  return (
+    get(body, 'result.services', []).length > 0 ||
+    Object.keys(get(body, 'result.location', {})).length > 0 ||
+    Object.keys(get(body, 'result.operating_system', {})).length > 0
+  );
+}
+
+function getTags(body) {
+  const tags = [];
+  const services = get(body, 'result.services', []);
+  for (let i = 0; (i < MAX_SERVICE_TAGS && i < services.length); i++) {
+    const service = services[i];
+    tags.push(`${service.port}/${service.service_name}`);
+  }
+  if(services.length > MAX_SERVICE_TAGS){
+    tags.push(`+${services.length - MAX_SERVICE_TAGS} more services`)
+  }
+  tags.push(`Country: ${get(body, 'result.location.country', 'Not Available')}`);
+  tags.push(`AS Name: ${get(body, 'result.autonomous_system.name', 'Not Available')}`);
+  return tags;
 }
 
 function validateOption(errors, options, optionName, errMessage) {
@@ -187,7 +186,7 @@ function validateOptions(options, callback) {
 }
 
 module.exports = {
-  doLookup: doLookup,
-  validateOptions: validateOptions,
-  startup: startup
+  doLookup,
+  validateOptions,
+  startup
 };

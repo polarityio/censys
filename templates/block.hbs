@@ -1,100 +1,127 @@
-{{#if details.results}}
-  <div>
-    <a href="https://censys.io/{{block.userOptions.dataset.display}}?q={{block.entity.value}}" class="p-link">Pivot to Censys Search {{fa-icon "external-link-square" class="external-link-icon"}}</a>
-  </div>
+{{#if details.result.ip}}
+  <h1 class="p-title">
+    {{fa-icon "desktop" fixedWidth=true}} Summary&nbsp;|&nbsp;
+    {{fa-icon "binoculars" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/explore">Explore </a>&nbsp;|&nbsp;
+    {{fa-icon "history" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/events">History </a>&nbsp;|&nbsp;
+    {{fa-icon "id-badge" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/whois">WHOIS </a>
+  </h1>
 
-  <span class="p-title">{{fa-icon "info" fixedWidth=true}} Censys Search Results ({{pagedResults.length}} of {{details.metadata.count}})</span>
+  {{#if details.result.location}}
+    <h1 class="p-title">{{fa-icon "map-pin" fixedWidth=true}} Geolocation </h1>
+    {{#if details.result.location.country}}
+      <div>
+          <span class="p-key">Country: </span>
+          <span class="p-value">{{details.result.location.country}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.location.city}}
+      <div>
+          <span class="p-key">City: </span>
+          <span class="p-value">{{details.result.location.city}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.location.province}}
+      <div>
+          <span class="p-key">Province: </span>
+          <span class="p-value">{{details.result.location.province}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.location.postal_code}}
+      <div>
+          <span class="p-key">Postal Code: </span>
+          <span class="p-value">{{details.result.location.postal_code}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.location.coordinates}}
+      <div>
+          <span class="p-key">Lat/Long: </span>
+          <span class="p-value">{{details.result.location.coordinates.latitude}},{{details.result.location.coordinates.longitude}}</span>
+      </div>
+    {{/if}}
+  {{/if}}
 
-  {{#each pagedResults as |result index|}}
-      <h1 class="p-title">
-        Result #{{inc index}}
-      </h1>
-      {{! IPv4 output parsing}}
-      {{#if result.ip}}
-        <div>
-          <a href="https://censys.io/ipv4/{{result.ip}}" class="p-link">View in Censys {{fa-icon "external-link-square" class="external-link-icon"}}</a>
-        </div>
-        <div>
-            <span class="p-key">IP: </span>
-            <span class="p-value">{{result.ip}}</span>
-        </div>
-      {{/if}}
-      {{#if result.location.country}}
-        <div>
-            <span class="p-key">Country: </span>
-            <span class="p-value">{{result.location.country}}</span>
-        </div>
-      {{/if}}
-      {{#if result.location.city}}
-        <div>
-            <span class="p-key">City: </span>
-            <span class="p-value">{{result.location.city}}</span>
-        </div>
-      {{/if}}
-      {{#if result.location.postal_code}}
-        <div>
-            <span class="p-key">Postal Code: </span>
-            <span class="p-value">{{result.location.postal_code}}</span>
-        </div>
-      {{/if}}
-      {{#if result.location.registered_country}}
-        <div>
-            <span class="p-key">Registered Country: </span>
-            <span class="p-value">{{result.location.registered_country}}</span>
-        </div>
-      {{/if}}
-      {{#if result.protocols}}
-        <h1 class="p-title">{{fa-icon "th-large" fixedWidth=true}} Protocols </h1>
-        {{#each result.protocols as |protocol|}}
-            <span class="section-tag">{{protocol}}</span>
-        {{/each}}
-      {{/if}}
+  {{#if details.result.autonomous_system}}
+    <h1 class="p-title">{{fa-icon "chart-network" fixedWidth=true}} AS Details </h1>
+    {{#if details.result.autonomous_system.asn}}
+      <div>
+          <span class="p-key">ASN: </span>
+          <span class="p-value">{{details.result.autonomous_system.asn}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.autonomous_system.name}}
+      <div>
+          <span class="p-key">Name: </span>
+          <span class="p-value">{{details.result.autonomous_system.name }}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.autonomous_system.bgp_prefix}}
+      <div>
+          <span class="p-key">BGP Prefix: </span>
+          <span class="p-value">{{details.result.autonomous_system.bgp_prefix}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.autonomous_system.country_code}}
+      <div>
+          <span class="p-key">Country Code: </span>
+          <span class="p-value">{{details.result.autonomous_system.country_code}}</span>
+      </div>
+    {{/if}}
+  {{/if}}
 
-      {{! Certificate output parsing}}
-      {{#if result.parsed.subject_dn}}
-        <div>
-            <span class="p-key">Subject DN: </span>
-            <span class="p-value"><a href="https://censys.io/certificates/{{result.parsed.fingerprint_sha256}}" class="p-link">{{result.parsed.subject_dn}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
-        </div>
-      {{/if}}
-      {{#if result.parsed.issuer_dn}}
-        <div>
-            <span class="p-key">Issuer DN: </span>
-            <span class="p-value">{{result.parsed.issuer_dn}}</span>
-        </div>
-      {{/if}}
-      {{#if result.parsed.fingerprint_sha256}}
-        <div>
-            <span class="p-key">SHA-256 Fingerprint: </span>
-            <span class="p-value">{{result.parsed.fingerprint_sha256}}</span>
-        </div>
-      {{/if}}
+  {{#if hasOperatingSystemData}}
+    <h1 class="p-title">{{fa-icon "code" fixedWidth=true}} OS Details </h1>
+    {{#if details.result.operating_system.uniform_resource_identifier}}
+      <div>
+          <span class="p-key">CPE: </span>
+          <span class="p-value">{{details.result.operating_system.uniform_resource_identifier}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.operating_system.vendor}}
+      <div>
+          <span class="p-key">Vendor: </span>
+          <span class="p-value">{{details.result.operating_system.vendor}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.operating_system.product}}
+      <div>
+          <span class="p-key">Product: </span>
+          <span class="p-value">{{details.result.operating_system.product}}</span>
+      </div>
+    {{/if}}
+    {{#if details.result.operating_system.version}}
+      <div>
+          <span class="p-key">Version: </span>
+          <span class="p-value">{{details.result.operating_system.version}}</span>
+      </div>
+    {{/if}}
+  {{/if}}
 
-      {{! Website output parsing}}
-      {{#if result.domain}}
-        <div>
-          <a href="https://censys.io/domain/{{result.domain}}" class="p-link">View in Censys {{fa-icon "external-link-square" class="external-link-icon"}}</a>
-        </div>
-        <div>
-            <span class="p-key">Domain: </span>
-            <span class="p-value">{{result.domain}}</span>
-        </div>
-      {{/if}}
-      {{#if result.alexa_rank}}
-        <div>
-            <span class="p-key">Alexa Rank: </span>
-            <span class="p-value">{{result.alexa_rank}}</span>
-        </div>
-      {{/if}}
-  {{/each}}
+  {{#if details.result.services}}
+    <h1 class="p-title">{{fa-icon "th-large" fixedWidth=true}} Services </h1>
+    {{#each details.result.services as |service index|}}
+        {{#if service.service_name}}
+            <span class="section-tag"><a href="https://search.censys.io/hosts/{{details.result.ip}}/data/table#{{service.port}}-{{service.transport_protocol}}-{{service.service_name}}" class="p-link">{{service.port}}/{{service.service_name}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
+        {{/if}}
+    {{/each}}
+  {{/if}}
 
-  {{#if (gt numAdditionalResults 0)}}
-    <div class="mt-2">
-      {{#if showAll}}
-        <span class="p-action" {{action "toggleShowAll"}}>Hide additional results</span> {{fa-icon "caret-up" fixedWidth=true}}
-      {{else}}
-        <span class="p-action" {{action "toggleShowAll"}}>View {{numAdditionalResults}} additional results</span> {{fa-icon "caret-down" fixedWidth=true}}
-      {{/if}}
+  {{#if details.result.last_updated_at}}
+    <h1 class="p-title">{{fa-icon "file-download" fixedWidth=true}} Update Metadata </h1>
+    <div>
+        <span class="p-key">Last Updated At: </span>
+        <span class="p-value">{{details.result.last_updated_at}}</span>
+    </div>
+  {{/if}}
+  {{#if details.result.location_updated_at}}
+    <div>
+        <span class="p-key">Location Updated At: </span>
+        <span class="p-value">{{details.result.location_updated_at}}</span>
+    </div>
+  {{/if}}
+  {{#if details.result.autonomous_system_updated_at}}
+    <div>
+        <span class="p-key">AS Updated At: </span>
+        <span class="p-value">{{details.result.autonomous_system_updated_at}}</span>
     </div>
   {{/if}}
 

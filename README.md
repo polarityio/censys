@@ -1,23 +1,21 @@
 # Polarity Censys Integration
 
-The Polarity Censys integration allows the Polarity user to quickly perform research against the three Censys maintained datasets collected via daily ZMap scans of the Internet and by synchronizing with public certificate transparency logs.
+The Polarity Censys integration allows the Polarity user to quickly perform research against the Censys "hosts" API endpoint. Fetches the entire host entity by IP address and returns the most recent Censys view of the host and its services.
 
 Check out the integration below!
 
-![Censys](https://user-images.githubusercontent.com/22529325/88841443-ff3caa00-d1ab-11ea-8784-4777f4e77e5e.png)
+<img src="assets/overlay.png" width="50%">
 
-## Censys Integration Options 
+## Censys Integration Options
 
-### API ID 
-API Id provided when you sign up for a Censys API account. 
+### Base URL for the Censys REST API
+The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://search.censys.io/api`
 
-### API Secret 
-API Secret Id provided when you sign up for a Censys API account. 
+### API ID
+API ID provided when you sign up for a Censys API account.
 
-### Dataset Search Options
-The Censys API only allows searching of one data set at a time. You can specify to search IPs, Domain or Certificates. 
-
-> Please note that certificates are looked up via the domain type. 
+### API Secret
+API Secret ID provided when you sign up for a Censys API account.
 
 ## Installation Instructions
 

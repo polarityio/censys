@@ -1,0 +1,61 @@
+{
+  "name": "Censys",
+  "acronym": "CSYS",
+  "onDemandOnly": false,
+  "defaultColor": "light-pink",
+  "description": "Censys reduces your Internet attack surface by continually discovering unknown assets and helping remediate Internet facing risks.",
+  "entityTypes": [
+    "IPv4"
+  ],
+  "styles": [
+    "./styles/style.less"
+  ],
+  "block": {
+    "component": {
+      "file": "./components/block.js"
+    },
+    "template": {
+      "file": "./templates/block.hbs"
+    }
+  },
+  "request": {
+    "cert": "",
+    "key": "",
+    "passphrase": "",
+    "ca": "",
+    "proxy": "",
+    "rejectUnauthorized": true
+  },
+  "logging": {
+    "level": "info"
+  },
+  "options": [
+    {
+      "key": "url",
+      "name": "Base URL for the Censys REST API",
+      "description": "The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://search.censys.io/api`",
+      "type": "text",
+      "default": "https://search.censys.io/api",
+      "userCanEdit": false,
+      "adminOnly": false
+    },
+    {
+      "key": "apiId",
+      "name": "API ID",
+      "description": "Valid Censys API ID",
+      "default": "",
+      "type": "text",
+      "userCanEdit": true,
+      "adminOnly": false
+    },
+    {
+      "key": "apiSecret",
+      "name": "API Secret",
+      "description": "Valid Censys API Secret corresponding to the provided ID",
+      "default": "",
+      "type": "password",
+      "userCanEdit": true,
+      "adminOnly": false
+    }
+  ]
+}

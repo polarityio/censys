@@ -5,7 +5,7 @@ const config = require('./config/config');
 const async = require('async');
 const fs = require('fs');
 const get = require('lodash.get');
-const { version: packageVersion } = require('package.json');
+const { version: packageVersion } = require('./package.json');
 
 let Logger;
 let requestWithDefaults;

@@ -26,7 +26,7 @@ module.exports = {
    */
   description:
     'Censys reduces your Internet attack surface by continually discovering unknown assets and helping remediate Internet facing risks.',
-  entityTypes: ['ipv4'],
+  entityTypes: ['IPv4'],
   /**
    * Provide custom component logic and template for rendering the integration details block.  If you do not
    * provide a custom template and/or component then the integration will display data as a table of key value

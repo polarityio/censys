@@ -5,13 +5,14 @@ const config = require('./config/config');
 const async = require('async');
 const fs = require('fs');
 const get = require('lodash.get');
+const { version: packageVersion } = require('package.json');
 
 let Logger;
 let requestWithDefaults;
 
 const MAX_PARALLEL_LOOKUPS = 10;
 const MAX_SERVICE_TAGS = 3;
-
+const USER_AGENT = `censys-polarity-integration-v${packageVersion}`;
 function startup(logger) {
   let defaults = {};
 
@@ -58,6 +59,9 @@ function doLookup(entities, options, cb) {
       auth: {
         user: options.apiId,
         pass: options.apiSecret
+      },
+      headers: {
+        'User-Agent': USER_AGENT
       },
       json: true
     };
@@ -151,12 +155,12 @@ function hasResult(body) {
 function getTags(body) {
   const tags = [];
   const services = get(body, 'result.services', []);
-  for (let i = 0; (i < MAX_SERVICE_TAGS && i < services.length); i++) {
+  for (let i = 0; i < MAX_SERVICE_TAGS && i < services.length; i++) {
     const service = services[i];
     tags.push(`${service.port}/${service.service_name}`);
   }
-  if(services.length > MAX_SERVICE_TAGS){
-    tags.push(`+${services.length - MAX_SERVICE_TAGS} more services`)
+  if (services.length > MAX_SERVICE_TAGS) {
+    tags.push(`+${services.length - MAX_SERVICE_TAGS} more services`);
   }
   tags.push(`Country: ${get(body, 'result.location.country', 'Not Available')}`);
   tags.push(`AS Name: ${get(body, 'result.autonomous_system.name', 'Not Available')}`);

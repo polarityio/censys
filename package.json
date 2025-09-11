@@ -1,11 +1,11 @@
 {
   "name": "censys",
-  "version": "3.2.5",
+  "version": "3.3.0",
   "main": "./integration.js",
   "private": true,
   "dependencies": {
     "async": "^3.2.6",
     "lodash.get": "^4.4.2",
-    "postman-request": "^2.88.1-postman.40"
+    "postman-request": "^2.88.1-postman.43"
   }
 }

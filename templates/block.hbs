@@ -1,128 +1,191 @@
-{{#if details.result.ip}}
-  <h1 class="p-title">
-    {{fa-icon "desktop" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}">Summary </a>&nbsp;|&nbsp;
-    {{fa-icon "binoculars" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/explore">Explore </a>&nbsp;|&nbsp;
-    {{fa-icon "history" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/events">History </a>&nbsp;|&nbsp;
-    {{fa-icon "id-badge" fixedWidth=true}} <a href="https://search.censys.io/hosts/{{details.result.ip}}/whois">WHOIS </a>
-  </h1>
-
-  {{#if details.result.location}}
-    <h1 class="p-title">{{fa-icon "map-pin" fixedWidth=true}} Geolocation </h1>
-    {{#if details.result.location.country}}
-      <div>
-          <span class="p-key">Country: </span>
-          <span class="p-value">{{details.result.location.country}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.location.city}}
-      <div>
-          <span class="p-key">City: </span>
-          <span class="p-value">{{details.result.location.city}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.location.province}}
-      <div>
-          <span class="p-key">Province: </span>
-          <span class="p-value">{{details.result.location.province}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.location.postal_code}}
-      <div>
-          <span class="p-key">Postal Code: </span>
-          <span class="p-value">{{details.result.location.postal_code}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.location.coordinates}}
-      <div>
-          <span class="p-key">Lat/Long: </span>
-          <span class="p-value">{{details.result.location.coordinates.latitude}},{{details.result.location.coordinates.longitude}}</span>
-      </div>
-    {{/if}}
-  {{/if}}
-
-  {{#if details.result.autonomous_system}}
-    <h1 class="p-title">{{fa-icon "chart-network" fixedWidth=true}} AS Details </h1>
-    {{#if details.result.autonomous_system.asn}}
-      <div>
-          <span class="p-key">ASN: </span>
-          <span class="p-value">{{details.result.autonomous_system.asn}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.autonomous_system.name}}
-      <div>
-          <span class="p-key">Name: </span>
-          <span class="p-value">{{details.result.autonomous_system.name }}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.autonomous_system.bgp_prefix}}
-      <div>
-          <span class="p-key">BGP Prefix: </span>
-          <span class="p-value">{{details.result.autonomous_system.bgp_prefix}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.autonomous_system.country_code}}
-      <div>
-          <span class="p-key">Country Code: </span>
-          <span class="p-value">{{details.result.autonomous_system.country_code}}</span>
-      </div>
-    {{/if}}
-  {{/if}}
-
-  {{#if hasOperatingSystemData}}
-    <h1 class="p-title">{{fa-icon "code" fixedWidth=true}} OS Details </h1>
-    {{#if details.result.operating_system.uniform_resource_identifier}}
-      <div>
-          <span class="p-key">CPE: </span>
-          <span class="p-value">{{details.result.operating_system.uniform_resource_identifier}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.operating_system.vendor}}
-      <div>
-          <span class="p-key">Vendor: </span>
-          <span class="p-value">{{details.result.operating_system.vendor}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.operating_system.product}}
-      <div>
-          <span class="p-key">Product: </span>
-          <span class="p-value">{{details.result.operating_system.product}}</span>
-      </div>
-    {{/if}}
-    {{#if details.result.operating_system.version}}
-      <div>
-          <span class="p-key">Version: </span>
-          <span class="p-value">{{details.result.operating_system.version}}</span>
-      </div>
-    {{/if}}
-  {{/if}}
-
-  {{#if details.result.services}}
-    <h1 class="p-title">{{fa-icon "th-large" fixedWidth=true}} Services </h1>
-    {{#each details.result.services as |service index|}}
-        {{#if service.service_name}}
-            <span class="section-tag"><a href="https://search.censys.io/hosts/{{details.result.ip}}/data/table#{{service.port}}-{{service.transport_protocol}}-{{service.service_name}}" class="p-link">{{service.port}}/{{service.service_name}} {{fa-icon "external-link-square" class="external-link-icon"}}</a></span>
-        {{/if}}
-    {{/each}}
-  {{/if}}
-
-  {{#if details.result.last_updated_at}}
-    <h1 class="p-title">{{fa-icon "file-download" fixedWidth=true}} Update Metadata </h1>
+<div>
+  <a href="https://platform.censys.io/hosts/{{resource.ip}}">
+    View in Censys {{fa-icon icon="external-link-square" fixedWidth=true class="external-link-icon"}}
+  </a>
+</div>
+{{#if (gt resource.services.length 0)}}
+  <h1 class="p-title">Services ({{resource.services.length}})</h1>
+  {{#each resource.services as |service index|}}
+    <div class="service-container">
+      <span class="service-tag">
+        <span class="tag-protocol">
+          {{service.protocol}} {{service.port}} 
+        </span>
+        <span class="tag-transport">
+          {{service.transport_protocol}}
+        </span>
+      </span>
+    </div>
+  {{/each}}
+{{/if}}
+{{#if resource.location}}
+  <h1 class="p-title">Geolocation </h1>
+  {{#if resource.location.country}}
     <div>
-        <span class="p-key">Last Updated At: </span>
-        <span class="p-value">{{details.result.last_updated_at}}</span>
+        <span class="p-key">Country: </span>
+        <span class="p-value">{{resource.location.country}}</span>
     </div>
   {{/if}}
-  {{#if details.result.location_updated_at}}
+  {{#if resource.location.city}}
     <div>
-        <span class="p-key">Location Updated At: </span>
-        <span class="p-value">{{details.result.location_updated_at}}</span>
+        <span class="p-key">City: </span>
+        <span class="p-value">{{resource.location.city}}</span>
     </div>
   {{/if}}
-  {{#if details.result.autonomous_system_updated_at}}
+  {{#if resource.location.province}}
     <div>
-        <span class="p-key">AS Updated At: </span>
-        <span class="p-value">{{details.result.autonomous_system_updated_at}}</span>
+        <span class="p-key">Province: </span>
+        <span class="p-value">{{resource.location.province}}</span>
     </div>
   {{/if}}
+  {{#if resource.location.postal_code}}
+    <div>
+        <span class="p-key">Postal Code: </span>
+        <span class="p-value">{{resource.location.postal_code}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.location.coordinates}}
+    <div>
+        <span class="p-key">Lat/Long: </span>
+        <span class="p-value">{{resource.location.coordinates.latitude}},{{resource.location.coordinates.longitude}}</span>
+    </div>
+  {{/if}}
+{{/if}}
 
+{{#if resource.autonomous_system}}
+  <h1 class="p-title">AS Details </h1>
+  {{#if resource.autonomous_system.asn}}
+    <div>
+        <span class="p-key">ASN: </span>
+        <span class="p-value">{{resource.autonomous_system.asn}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.autonomous_system.name}}
+    <div>
+        <span class="p-key">Name: </span>
+        <span class="p-value">{{resource.autonomous_system.name }}</span>
+    </div>
+  {{/if}}
+  {{#if resource.autonomous_system.bgp_prefix}}
+    <div>
+        <span class="p-key">BGP Prefix: </span>
+        <span class="p-value">{{resource.autonomous_system.bgp_prefix}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.autonomous_system.country_code}}
+    <div>
+        <span class="p-key">Country Code: </span>
+        <span class="p-value">{{resource.autonomous_system.country_code}}</span>
+    </div>
+  {{/if}}
+{{/if}}
+
+{{#if hasOperatingSystemData}}
+  <h1 class="p-title">OS Details </h1>
+  {{#if resource.operating_system.uniform_resource_identifier}}
+    <div>
+        <span class="p-key">CPE: </span>
+        <span class="p-value">{{resource.operating_system.uniform_resource_identifier}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.operating_system.vendor}}
+    <div>
+        <span class="p-key">Vendor: </span>
+        <span class="p-value">{{resource.operating_system.vendor}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.operating_system.product}}
+    <div>
+        <span class="p-key">Product: </span>
+        <span class="p-value">{{resource.operating_system.product}}</span>
+    </div>
+  {{/if}}
+  {{#if resource.operating_system.version}}
+    <div>
+        <span class="p-key">Version: </span>
+        <span class="p-value">{{resource.operating_system.version}}</span>
+    </div>
+  {{/if}}
+{{/if}}
+
+{{#let resource.whois.network as | whoisNet |}}
+  {{#if (or whoisNet.name whoisNet.handle whoisNet.created whoisNet.updated (gt whoisNet.cidrs.length 0))}}
+    <h1 class="p-title">WHOIS Network</h1>
+    {{#if whoisNet.name}}
+      <div>
+        <span class="p-key">Name: </span>
+        <span class="p-value">{{whoisNet.name}}</span>
+      </div>
+    {{/if}}
+    {{#if whoisNet.handle}}
+      <div>
+        <span class="p-key">Handle: </span>
+        <span class="p-value">{{whoisNet.handle}}</span>
+      </div>
+    {{/if}}
+    {{#if whoisNet.created}}
+      <div>
+        <span class="p-key">Created: </span>
+        <span class="p-value">{{moment-format whoisNet.created "YYYY-MM-DD HH:mm:ss z" timeZone=timezone}}</span>
+      </div>
+    {{/if}}
+    {{#if whoisNet.updated}}
+      <div>
+        <span class="p-key">Updated: </span>
+        <span class="p-value">{{moment-format whoisNet.updated "YYYY-MM-DD HH:mm:ss z" timeZone=timezone}}</span>
+      </div>
+    {{/if}}
+    {{#if (gt whoisNet.cidrs.length 0)}}
+      <div>
+        <div class="p-key">CIDRs:</div>
+        {{#each whoisNet.cidrs as | cidr |}}
+          <span class="p-tag">{{cidr}}</span>
+        {{/each}}
+      </div>
+    {{/if}}
+  {{/if}}
+{{/let}}
+
+{{#let resource.whois.organization as | whoisOrg |}}
+  {{#if (or whoisOrg.name whoisOrg.handle whoisOrg.address)}}
+    <h1 class="p-title">WHOIS Organization</h1>
+    {{#if whoisOrg.name}}
+      <div>
+        <span class="p-key">Name: </span>
+        <span class="p-value">{{whoisOrg.name}}</span>
+      </div>
+    {{/if}}
+    {{#if whoisOrg.handle}}
+      <div>
+        <span class="p-key">Handle: </span>
+        <span class="p-value">{{whoisOrg.handle}}</span>
+      </div>
+    {{/if}}
+    {{#if whoisOrg.address}}
+      <div>
+        <span class="p-key">Address: </span>
+        <span class="p-value p-block">{{whoisOrg.address}}</span>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/let}}
+
+{{#if (or resource.dns.forward_dns (gt resource.dns.reverse_dns.length 0))}}
+  <h1 class="p-title">DNS</h1>
+  {{#if resource.dns.forward_dns}}
+    <div>
+      <div class="p-key">Forward DNS:</div>
+      {{#each-in resource.dns.forward_dns as | name value |}}
+          <span class="p-tag">{{name}}</span>
+      {{/each-in}}
+    </div>
+  {{/if}}
+  {{#if resource.dns.reverse_dns}}
+    <div>
+      <div class="p-key">Reverse DNS:</div>
+      {{#each resource.dns.reverse_dns.names as | name |}}
+        <span class="p-tag">{{name}}</span>
+      {{/each}}
+    </div>
+  {{/if}}
 {{/if}}

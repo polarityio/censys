@@ -19,43 +19,36 @@
       "file": "./templates/block.hbs"
     }
   },
-  "request": {
-    "cert": "",
-    "key": "",
-    "passphrase": "",
-    "ca": "",
-    "proxy": ""
-  },
   "logging": {
-    "level": "info"
+    "level": "trace"
   },
   "options": [
     {
       "key": "url",
       "name": "Base URL for the Censys REST API",
-      "description": "The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://search.censys.io/api`",
+      "description": "The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://api.platform.censys.io`",
       "type": "text",
-      "default": "https://search.censys.io/api",
+      "default": "https://api.platform.censys.io",
       "userCanEdit": false,
       "adminOnly": false
     },
     {
-      "key": "apiId",
-      "name": "API ID",
-      "description": "Valid Censys API ID",
-      "default": "",
-      "type": "text",
-      "userCanEdit": true,
-      "adminOnly": false
-    },
-    {
-      "key": "apiSecret",
-      "name": "API Secret",
-      "description": "Valid Censys API Secret corresponding to the provided ID",
+      "key": "accessToken",
+      "name": "Access Token",
+      "description": "A Censys Personal Access Token used for authenticating to the Censys API",
       "default": "",
       "type": "password",
-      "userCanEdit": true,
-      "adminOnly": false
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "orgId",
+      "name": "Censys Organization ID",
+      "description": "A valid Censys Organization ID associated with the provided Access Token.  The Organization ID can be determined by navigating to the \"My Account\" page and looking for the `org` parameter in the URL.  The Organization ID is a UUID with the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.",
+      "default": "",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": true
     }
   ]
 }

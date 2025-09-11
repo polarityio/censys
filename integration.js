@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('postman-request');
-const config = require('./config/config');
 const async = require('async');
 const fs = require('fs');
 const get = require('lodash.get');
@@ -13,36 +12,16 @@ let requestWithDefaults;
 const MAX_PARALLEL_LOOKUPS = 10;
 const MAX_SERVICE_TAGS = 3;
 const USER_AGENT = `censys-polarity-integration-v${packageVersion}`;
+
 function startup(logger) {
-  let defaults = {};
+  let defaults = {
+    json: true,
+    headers: {
+      'User-Agent': USER_AGENT
+    }
+  };
 
   Logger = logger;
-
-  const { cert, key, passphrase, ca, proxy, rejectUnauthorized } = config.request;
-
-  if (typeof cert === 'string' && cert.length > 0) {
-    defaults.cert = fs.readFileSync(cert);
-  }
-
-  if (typeof key === 'string' && key.length > 0) {
-    defaults.key = fs.readFileSync(key);
-  }
-
-  if (typeof passphrase === 'string' && passphrase.length > 0) {
-    defaults.passphrase = passphrase;
-  }
-
-  if (typeof ca === 'string' && ca.length > 0) {
-    defaults.ca = fs.readFileSync(ca);
-  }
-
-  if (typeof proxy === 'string' && proxy.length > 0) {
-    defaults.proxy = proxy;
-  }
-
-  if (typeof rejectUnauthorized === 'boolean') {
-    defaults.rejectUnauthorized = rejectUnauthorized;
-  }
 
   requestWithDefaults = request.defaults(defaults);
 }
@@ -51,19 +30,19 @@ function doLookup(entities, options, cb) {
   let lookupResults = [];
   let tasks = [];
 
-  Logger.debug(entities);
+  Logger.trace({ entities }, 'doLookup');
+
+  options.url = options.url.endsWith('/') ? options.url : options.url + '/';
+
   entities.forEach((entity) => {
     let requestOptions = {
       method: 'GET',
-      uri: `${options.url}/v2/hosts/${entity.value}`,
-      auth: {
-        user: options.apiId,
-        pass: options.apiSecret
-      },
+      uri: `${options.url}v3/global/asset/host/${entity.value}`,
       headers: {
-        'User-Agent': USER_AGENT
-      },
-      json: true
+        Authorization: `Bearer ${options.accessToken}`,
+        'X-Organization-ID': options.orgId,
+        Accept: 'application/vnd.censys.api.v3.host.v1+json'
+      }
     };
 
     Logger.trace({ requestOptions }, 'Request Options');
@@ -121,7 +100,7 @@ function handleRestError(error, entity, res, body) {
 
   Logger.trace({ body, status: res.statusCode });
 
-  if (res.statusCode === 200 && body.status === 'OK') {
+  if (res.statusCode === 200) {
     // we got data! (could still be a miss however)
     if (hasResult(body)) {
       return {
@@ -146,24 +125,25 @@ function handleRestError(error, entity, res, body) {
 
 function hasResult(body) {
   return (
-    get(body, 'result.services', []).length > 0 ||
-    Object.keys(get(body, 'result.location', {})).length > 0 ||
+    get(body, 'result.resource.services', []).length > 0 ||
+    Object.keys(get(body, 'result.resource.location', {})).length > 0 ||
     Object.keys(get(body, 'result.operating_system', {})).length > 0
   );
 }
 
 function getTags(body) {
   const tags = [];
-  const services = get(body, 'result.services', []);
+  const services = get(body, 'result.resource.services', []);
   for (let i = 0; i < MAX_SERVICE_TAGS && i < services.length; i++) {
     const service = services[i];
-    tags.push(`${service.port}/${service.service_name}`);
+    tags.push(`${service.port}/${service.protocol}`);
   }
   if (services.length > MAX_SERVICE_TAGS) {
     tags.push(`+${services.length - MAX_SERVICE_TAGS} more services`);
   }
-  tags.push(`Country: ${get(body, 'result.location.country', 'Not Available')}`);
-  tags.push(`AS Name: ${get(body, 'result.autonomous_system.name', 'Not Available')}`);
+  tags.push(`Country: ${get(body, 'result.resource.location.country', 'Not Available')}`);
+  tags.push(`AS Name: ${get(body, 'result.resource.autonomous_system.name', 'Not Available')}`);
+  
   return tags;
 }
 
@@ -183,8 +163,8 @@ function validateOptions(options, callback) {
   let errors = [];
 
   validateOption(errors, options, 'url', 'You must provide a valid URL.');
-  validateOption(errors, options, 'apiId', 'You must provide a valid API ID.');
-  validateOption(errors, options, 'apiSecret', 'You must provide a valid API Secret.');
+  validateOption(errors, options, 'accessToken', 'You must provide a valid Access Token.');
+  validateOption(errors, options, 'orgId', 'You must provide a valid Organization ID.');
 
   callback(null, errors);
 }

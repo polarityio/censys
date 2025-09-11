@@ -4,18 +4,20 @@ The Polarity Censys integration allows the Polarity user to quickly perform rese
 
 Check out the integration below!
 
+Starting with version 3.3.0 of the Polarity-Censys Integration, only the Censys v3 API is supported.  The integration no longer supports the legacy Censys Search API.
+
 <img src="assets/overlay.png" width="50%">
 
 ## Censys Integration Options
 
 ### Base URL for the Censys REST API
-The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://search.censys.io/api`
+The base URL for the Censys REST API including the schema (i.e., https://). Defaults to `https://api.platform.censys.io`
 
-### API ID
-API ID provided when you sign up for a Censys API account.
+### Access Token
+A Censys Personal Access Token used for authenticating to the Censys API
 
-### API Secret
-API Secret ID provided when you sign up for a Censys API account.
+### Censys Organization ID
+The Censys Organization ID associated with the provided Access Token. The Organization ID can be determined by navigating to the "My Account" page and looking for the `org` parameter in the URL. The Organization ID is a UUID with the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
 
 ## Installation Instructions
 

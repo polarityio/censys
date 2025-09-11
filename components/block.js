@@ -14,5 +14,17 @@ polarity.export = PolarityComponent.extend({
       return Object.keys(os).length > 0;
     }
     return false;
+  }),
+  labels: Ember.computed('resource.services', function () {
+    const services = this.get('resource.services');
+    const labels = [];
+    services.forEach((service) => {
+      if (Array.isArray(service.labels)) {
+        service.labels.forEach((label) => {
+          labels.push(label.value);
+        });
+      }
+    });
+    return labels;
   })
 });

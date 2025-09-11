@@ -3,19 +3,27 @@
     View in Censys {{fa-icon icon="external-link-square" fixedWidth=true class="external-link-icon"}}
   </a>
 </div>
+
+{{#if (gt labels.length 0)}}
+  <h1 class="p-title">Labels</h1>
+  {{#each labels as | label |}}
+    <span class="p-tag">
+      {{label}}
+    </span>
+  {{/each}}
+{{/if}}
+
 {{#if (gt resource.services.length 0)}}
   <h1 class="p-title">Services ({{resource.services.length}})</h1>
-  {{#each resource.services as |service index|}}
-    <div class="service-container">
-      <span class="service-tag">
-        <span class="tag-protocol">
-          {{service.protocol}} {{service.port}} 
-        </span>
-        <span class="tag-transport">
-          {{service.transport_protocol}}
-        </span>
+  {{#each resource.services as | service |}}
+    <span class="service-tag">
+      <span class="tag-protocol">
+        {{service.protocol}} {{service.port}} 
       </span>
-    </div>
+      <span class="tag-transport">
+        {{service.transport_protocol}}
+      </span>
+    </span>
   {{/each}}
 {{/if}}
 {{#if resource.location}}
@@ -82,10 +90,10 @@
 
 {{#if hasOperatingSystemData}}
   <h1 class="p-title">OS Details </h1>
-  {{#if resource.operating_system.uniform_resource_identifier}}
+  {{#if resource.operating_system.cpe}}
     <div>
         <span class="p-key">CPE: </span>
-        <span class="p-value">{{resource.operating_system.uniform_resource_identifier}}</span>
+        <span class="p-value">{{resource.operating_system.cpe}}</span>
     </div>
   {{/if}}
   {{#if resource.operating_system.vendor}}
